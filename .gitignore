@@ -1,3 +1,11 @@
 .vscode
 *.obj
 *.exe
+.vs
+bin
+obj
+*.sln
+*.sln.*
+*.vcxproj
+*.vcxproj.*
+*.ppm

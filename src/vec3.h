@@ -122,6 +122,11 @@ namespace rt
         return v.x * v.x + v.y * v.y + v.z * v.z;
     }
     
+    inline vec3 normalize(const vec3& v)
+    {
+        return v / len(v);
+    }
+
     inline float dot(const vec3& l, const vec3& r)
     {
         return l.x * r.x + l.y * r.y + l.z * r.z;
@@ -134,6 +139,11 @@ namespace rt
             l.x * r.z + l.z * r.x,
             l.x * r.y - l.y * r.x
         );
+    }
+
+    inline vec3 lerp(float t, const vec3& l, const vec3& r)
+    {
+        return (1.0f - t) * l + t * r;
     }
 
     inline std::ostream& operator<<(std::ostream& out, const vec3 v)

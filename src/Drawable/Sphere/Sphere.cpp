@@ -16,7 +16,7 @@ namespace rt
         float c = dot(co, co) - r * r;
         float delta = b * b - 4.0f * a * c;
 
-        if (delta > 0)
+        if (delta >= 0)
         {
             float t;
             t = (-b - sqrtf(delta)) / (2.0f * a);

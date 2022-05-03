@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Drawable/DrawableList/DrawableList.h"
+#include "../Drawable/Sphere/Sphere.h"
 #include "../Camera/Camera.h"
 
 #include <string>
@@ -17,13 +17,14 @@ namespace rt
         void render(const std::string& path, const Camera& camera, int antialiasing = 16);
 
     private:
+        bool hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const;
         Vec3 pixel(const Ray& ray) const;
 
     private:
         int width;
         int height;
-        DrawableList drawableList;
         Vec3 upColor;
         Vec3 downColor;
+        std::vector<std::unique_ptr<Drawable>> drawables;
     };
 }

@@ -18,7 +18,7 @@ namespace rt
 
     void Image::emplaceSphere(const Vec3& c, float r)
     {
-        drawableList.emplaceSphere(c, r);
+        drawables.push_back(std::make_unique<Sphere>(c, r));
     }
 
     void Image::render(const std::string& path, const Camera& camera, int antialiasing)
@@ -53,11 +53,30 @@ namespace rt
         }
     }
 
+    bool Image::hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const
+    {
+        HitRecord rec;
+        bool hit = false;
+        float closest_t = t_max;
+
+        for (auto& drawable : drawables)
+        {
+            if (drawable->hit(ray, t_min, closest_t, rec))
+            {
+                hit = true;
+                closest_t = rec.t;
+                hit_record = rec;
+            }
+        }
+
+        return hit;
+    }
+
     Vec3 Image::pixel(const Ray& ray) const
     {
         HitRecord rec;
 
-        if (drawableList.hit(ray, 0.0f, 100000.0f, rec))
+        if (hit(ray, 0.000001f, 1000000.0f, rec))
         {
             return 0.5f * Vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
         }

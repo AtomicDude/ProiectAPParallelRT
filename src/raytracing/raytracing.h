@@ -1,7 +1,6 @@
 #pragma once
 
-#include "vec3.h"
-#include "ray.h"
+#include "../ray/ray.h"
 #include <string>
 #include <vector>
 

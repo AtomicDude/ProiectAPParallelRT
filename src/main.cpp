@@ -1,11 +1,9 @@
-#include "raytracing.h"
+#include "raytracing/raytracing.h"
 #include <iostream>
 #include <fstream>
 
 int main()
 {
-    std::cout << "a\n";
-
     int width = 200;
     int height = 100;
 
@@ -20,11 +18,9 @@ int main()
 
     std::vector<std::vector<rt::vec3>> pixels(height, std::vector<rt::vec3>(width));
 
-    std::cout << "a\n";
     
     for (int y = height - 1; y >= 0; y--)
     {
-        std::cout << "a\n";
         for (int x = 0; x < width; x++)
         {
             float u = (float)x / (float)width;
@@ -40,9 +36,7 @@ int main()
         }
     }
 
-    std::cout << "x\n";
     rt::write_image("gradient.ppm", pixels);
-    std::cout << "y\n";
 
     return 0;
 }

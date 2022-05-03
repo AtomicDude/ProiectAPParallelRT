@@ -1,6 +1,4 @@
 .vscode
-*.obj
-*.exe
 .vs
 bin
 obj

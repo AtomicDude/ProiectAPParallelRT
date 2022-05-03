@@ -1,25 +1,25 @@
-#include "ray.h"
+#include "Ray.h"
 
 namespace rt
 {
-    ray::ray(const vec3& _a, const vec3& _b) :
-        a(_a),
-        b(_b)
+    Ray::Ray(const Vec3& a, const Vec3& b) :
+        o(a),
+        d(b - a)
     {
     }
 
-    const vec3& ray::origin() const
+    const Vec3& Ray::origin() const
     {
-        return a;
+        return o;
     }
 
-    const vec3& ray::direction() const
+    const Vec3& Ray::direction() const
     {
-        return b;
+        return d;
     }
 
-    vec3 ray::point(float t) const
+    Vec3 Ray::point(float t) const
     {
-        return a + t * b;
+        return o + t * d;
     }
 }

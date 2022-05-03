@@ -5,9 +5,9 @@
 
 namespace rt
 {
-    union vec3
+    union Vec3
     {
-        vec3(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f) :
+        Vec3(float _x = 0.0f, float _y = 0.0f, float _z = 0.0f) :
             x(_x),
             y(_y),
             z(_z)
@@ -31,52 +31,52 @@ namespace rt
         float e[3];
     };
 
-    inline vec3 operator+(const vec3& l, const vec3& r)
+    inline Vec3 operator+(const Vec3& l, const Vec3& r)
     {
-        return vec3(
+        return Vec3(
             l.x + r.x,
             l.y + r.y,
             l.z + r.z
             );
     }
 
-    inline vec3 operator-(const vec3& l, const vec3& r)
+    inline Vec3 operator-(const Vec3& l, const Vec3& r)
     {
-        return vec3(
+        return Vec3(
             l.x - r.x,
             l.y - r.y,
             l.z - r.z
             );
     }
 
-    inline vec3 operator*(float s, vec3 v)
+    inline Vec3 operator*(float s, Vec3 v)
     {
-        return vec3(
+        return Vec3(
             s * v.x,
             s * v.y,
             s * v.z
             );
     }
 
-    inline vec3 operator*(vec3 v, float s)
+    inline Vec3 operator*(Vec3 v, float s)
     {
-        return vec3(
+        return Vec3(
             v.x * s,
             v.y * s,
             v.z * s
             );
     }
 
-    inline vec3 operator/(vec3 v, float s)
+    inline Vec3 operator/(Vec3 v, float s)
     {
-        return vec3(
+        return Vec3(
             v.x / s,
             v.y / s,
             v.z / s
             );
     }
 
-    inline vec3& operator+=(vec3& l, const vec3& r)
+    inline Vec3& operator+=(Vec3& l, const Vec3& r)
     {
         l.x += r.x;
         l.y += r.y;
@@ -85,7 +85,7 @@ namespace rt
         return l;
     }
 
-    inline vec3& operator-=(vec3& l, const vec3& r)
+    inline Vec3& operator-=(Vec3& l, const Vec3& r)
     {
         l.x -= r.x;
         l.y -= r.y;
@@ -94,7 +94,7 @@ namespace rt
         return l;
     }
 
-    inline vec3& operator*=(vec3& l, float s)
+    inline Vec3& operator*=(Vec3& l, float s)
     {
         l.x *= s;
         l.y *= s;
@@ -103,7 +103,7 @@ namespace rt
         return l;
     }
 
-    inline vec3& operator/=(vec3& l, float s)
+    inline Vec3& operator/=(Vec3& l, float s)
     {
         l.x /= s;
         l.y /= s;
@@ -112,41 +112,41 @@ namespace rt
         return l;
     }
 
-    inline float len(const vec3& v)
+    inline float len(const Vec3& v)
     {
         return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
     }
 
-    inline float len2(const vec3& v)
+    inline float len2(const Vec3& v)
     {
         return v.x * v.x + v.y * v.y + v.z * v.z;
     }
     
-    inline vec3 normalize(const vec3& v)
+    inline Vec3 normalize(const Vec3& v)
     {
         return v / len(v);
     }
 
-    inline float dot(const vec3& l, const vec3& r)
+    inline float dot(const Vec3& l, const Vec3& r)
     {
         return l.x * r.x + l.y * r.y + l.z * r.z;
     }
 
-    inline vec3 cross(const vec3& l, const vec3& r)
+    inline Vec3 cross(const Vec3& l, const Vec3& r)
     {
-        return vec3(
+        return Vec3(
             l.y * r.z - l.z * r.y,
             l.x * r.z + l.z * r.x,
             l.x * r.y - l.y * r.x
         );
     }
 
-    inline vec3 lerp(float t, const vec3& l, const vec3& r)
+    inline Vec3 lerp(float t, const Vec3& l, const Vec3& r)
     {
         return (1.0f - t) * l + t * r;
     }
 
-    inline std::ostream& operator<<(std::ostream& out, const vec3 v)
+    inline std::ostream& operator<<(std::ostream& out, const Vec3 v)
     {
         out << "(" << v.x << ", " << v.y << ", " << v.z << ")";
 

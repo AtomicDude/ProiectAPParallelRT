@@ -1,20 +1,20 @@
 #pragma once
 
-#include "../vec/vec3.h"
+#include "../Vec/Vec3.h"
 
 namespace rt
 {
-    class ray
+    class Ray
     {
     public:
-        ray(const vec3& _a, const vec3& _b);
+        Ray(const Vec3& a, const Vec3& b);
 
-        const vec3& origin() const;
-        const vec3& direction() const;
-        vec3 point(float t) const;
+        const Vec3& origin() const;
+        const Vec3& direction() const;
+        Vec3 point(float t) const;
 
     private:
-        vec3 a;
-        vec3 b;
+        Vec3 o;
+        Vec3 d;
     };
 }

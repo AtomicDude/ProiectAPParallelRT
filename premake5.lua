@@ -36,5 +36,6 @@ project (PROJECT_NAME)
     filter "configurations:Release"
         kind "ConsoleApp"
         optimize "on"
+        symbols "off"
         staticruntime "off"
         runtime "Release"

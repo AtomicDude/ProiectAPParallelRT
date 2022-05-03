@@ -1,42 +1,31 @@
-#include "raytracing/raytracing.h"
+#include "Drawable/DrawableList/DrawableList.h"
+#include "Camera/Camera.h"
+#include "Image/Image.h"
+
 #include <iostream>
 #include <fstream>
 
 int main()
 {
-    int width = 200;
-    int height = 100;
-
-    rt::vec3 eye(0.0f, 0.0f, 0.0f);
-
-    rt::vec3 lower_left(-2.0f, -1.0f, -1.0f);
-    rt::vec3 horizontal(4.0f, 0.0f, 0.0f);
-    rt::vec3 vertical(0.0f, 2.0f, 0.0f);
-
-    rt::vec3 start_color(0.5f, 0.7f, 1.0f);
-    rt::vec3 end_color(0.0f, 0.8f, 0.2f);
-
-    std::vector<std::vector<rt::vec3>> pixels(height, std::vector<rt::vec3>(width));
-
+    int factor = 64;
+    int width = 16 * factor;
+    int height = 9 * factor;
     
-    for (int y = height - 1; y >= 0; y--)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            float u = (float)x / (float)width;
-            float v = (float)y / (float)height;
+    rt::Camera camera(
+        rt::Vec3(0.0f, 0.0f, 0.0f),  // eye
+        rt::Vec3(0.0f, 0.0f, -1.0f), // lookat
+        rt::Vec3(0.0f, 1.0f, 0.0f),  // up
+        90.0f,                       // fov
+        (float)width / (float)height // aspect ratio
+    );
 
-            rt::vec3 direction = lower_left + u * horizontal + v * vertical;
+    rt::Image image(width, height);
+    image.setBackgroundGradient(rt::Vec3(0.5f, 0.7f, 1.0f), rt::Vec3(0.0f, 0.8f, 0.2f));
+    image.emplaceSphere(rt::Vec3(-2.0f, 0.0f, -3.0f), 1.0f);
+    image.emplaceSphere(rt::Vec3(2.0f, 0.0f, -3.0f), 1.0f);
+    image.emplaceSphere(rt::Vec3(0.0f, -101.0f, -1.0f), 100.0f);
 
-            rt::ray ray(eye, direction);
-
-            rt::vec3 color = rt::gradient_color(ray, start_color, end_color);
-
-            pixels[y][x] = color;
-        }
-    }
-
-    rt::write_image("gradient.ppm", pixels);
+    image.render("spheres.ppm", camera, 32);
 
     return 0;
 }

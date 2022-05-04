@@ -98,9 +98,11 @@ namespace rt
         {
             Ray outRay;
             Vec3 outColor;
-            //hit_record.normal = Vec3::dot(ray.direction(), hit_record.normal) < 0.0 ? hit_record.normal : -hit_record.normal;
+            
+            bool isOutside = Vec3::dot(ray.direction(), hit_record.normal) < 0.0;
+            hit_record.normal = isOutside ? hit_record.normal : -hit_record.normal;
 
-            if (hit_record.material->scatter(ray, hit_record.p, hit_record.normal, outColor, outRay))
+            if (hit_record.material->scatter(ray, hit_record.p, hit_record.normal, isOutside, outColor, outRay))
             {
                 return outColor * computeColor(outRay, depth - 1);
             }

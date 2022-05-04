@@ -9,7 +9,7 @@ namespace rt
     public:
         MetalMaterial(const Vec3& color, double fuzziness = 0.0);
 
-        virtual bool scatter(const Ray& inRay, const Vec3& p, const Vec3& normal, Vec3& outColor, Ray& outRay) const override;
+        virtual bool scatter(const Ray& inRay, const Vec3& p, const Vec3& normal, bool isOutside, Vec3& outColor, Ray& outRay) const override;
 
     private:
         double m_Fuzziness;

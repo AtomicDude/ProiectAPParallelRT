@@ -8,7 +8,7 @@ namespace rt
     {
     }
 
-    bool MetalMaterial::scatter(const Ray& inRay, const Vec3& p, const Vec3& normal, Vec3& outColor, Ray& outRay) const
+    bool MetalMaterial::scatter(const Ray& inRay, const Vec3& p, const Vec3& normal, bool isOutside, Vec3& outColor, Ray& outRay) const
     {
         Vec3 direction = Vec3::reflect(Vec3::normalize(inRay.direction()), normal);
         outRay = Ray(p, direction + m_Fuzziness * Vec3::randomInUnitSphere());

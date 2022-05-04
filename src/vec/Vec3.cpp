@@ -37,6 +37,16 @@ namespace rt
         return v - 2.0 * dot(v, normal) * normal;
     }
 
+    Vec3 Vec3::refract(const Vec3& v, const Vec3& normal, double ratio)
+    {
+        double cos_theta = fmin(dot(-v, normal), 1.0);
+
+        Vec3 v_perpendicular = ratio * (v + cos_theta * normal);
+        Vec3 v_parallel = -sqrt(fabs(1.0 - Vec3::len2(v_perpendicular))) * normal;
+
+        return v_perpendicular + v_parallel;
+    }
+
     Vec3 Vec3::lerp(double t, const Vec3& l, const Vec3& r)
     {
         return (1.0 - t) * l + t * r;

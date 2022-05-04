@@ -35,6 +35,7 @@ namespace rt
         static double dot(const Vec3& l, const Vec3& r);
         static Vec3 cross(const Vec3& l, const Vec3& r);
         static Vec3 reflect(const Vec3& v, const Vec3& normal);
+        static Vec3 refract(const Vec3& v, const Vec3& normal, double ratio);
         static Vec3 lerp(double t, const Vec3& l, const Vec3& r);
         static Vec3 randomUnit();
         static Vec3 randomInUnitSphere();

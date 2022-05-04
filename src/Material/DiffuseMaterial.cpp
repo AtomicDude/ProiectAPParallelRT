@@ -7,7 +7,7 @@ namespace rt
     {
     }
 
-    bool DiffuseMaterial::scatter(const Ray& inRay, const Vec3& p, const Vec3& normal, Vec3& outColor, Ray& outRay) const
+    bool DiffuseMaterial::scatter(const Ray& inRay, const Vec3& p, const Vec3& normal, bool isOutside, Vec3& outColor, Ray& outRay) const
     {
         Vec3 direction = normal + Vec3::randomUnit();
 

@@ -7,14 +7,14 @@ namespace rt
     class Sphere : public Drawable
     {
     public:
-        Sphere(Vec3 _c = Vec3(0.0f, 0.0f, 0.0f), float _r = 1.0f);
-        virtual bool hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const override;
+        Sphere(Vec3 center, double radius, const std::shared_ptr<Material>& material);
+        virtual bool hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const override;
 
         const Vec3& center() const;
-        float radius() const;
+        double radius() const;
 
     private:
-        Vec3 c;
-        float r;
+        Vec3 m_Center;
+        double m_Radius;
     };
 }

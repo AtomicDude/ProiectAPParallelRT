@@ -2,24 +2,24 @@
 
 namespace rt
 {
-    Ray::Ray(const Vec3& a, const Vec3& b) :
-        o(a),
-        d(b - a)
+    Ray::Ray(const Vec3& origin, const Vec3& direction) :
+        m_Origin(origin),
+        m_Direction(direction)
     {
     }
 
     const Vec3& Ray::origin() const
     {
-        return o;
+        return m_Origin;
     }
 
     const Vec3& Ray::direction() const
     {
-        return d;
+        return m_Direction;
     }
 
-    Vec3 Ray::point(float t) const
+    Vec3 Ray::point(double t) const
     {
-        return o + t * d;
+        return m_Origin + t * m_Direction;
     }
 }

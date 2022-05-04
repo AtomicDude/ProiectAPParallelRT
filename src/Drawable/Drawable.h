@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Ray/Ray.h"
+#include "../Material/Material.h"
 #include "HitRecord.h"
 
 namespace rt
@@ -8,6 +9,10 @@ namespace rt
     class Drawable
     {
     public:
-        virtual bool hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const = 0;
+        Drawable(const std::shared_ptr<Material>& material);
+        virtual bool hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const = 0;
+
+    protected:
+        std::shared_ptr<Material> m_Material;
     };
 }

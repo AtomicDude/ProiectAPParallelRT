@@ -1,16 +1,17 @@
 #pragma once
 
 #include "../Vec/Vec3.h"
+#include "../Material/Material.h"
 
-class Material;
+#include <memory>
 
 namespace rt
 {
     struct HitRecord
     {
-        float t;
+        double t;
         Vec3 p;
         Vec3 normal;
-        Material* material;
+        std::shared_ptr<Material> material;
     };
 }

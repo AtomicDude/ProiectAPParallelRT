@@ -2,43 +2,35 @@
 
 namespace rt
 {
-    Sphere::Sphere(Vec3 _c, float _r):
-        c(_c),
-        r(_r)
+    Sphere::Sphere(Vec3 c, double r, const std::shared_ptr<Material>& material):
+        Drawable(material),
+        m_Center(c),
+        m_Radius(r)
     {
     }
 
-    bool Sphere::hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const
+    bool Sphere::hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const
     {
-        Vec3 co = ray.origin() - c;
-        float a = dot(ray.direction(), ray.direction());
-        float b = 2.0f * dot(co, ray.direction());
-        float c = dot(co, co) - r * r;
-        float delta = b * b - 4.0f * a * c;
+        Vec3 co = ray.origin() - m_Center;
+        double a = Vec3::dot(ray.direction(), ray.direction());
+        double b = 2.0 * Vec3::dot(co, ray.direction());
+        double c = Vec3::dot(co, co) - m_Radius * m_Radius;
+        double delta = b * b - 4.0 * a * c;
 
-        if (delta >= 0)
+        if (delta >= 0.0)
         {
-            float t;
-            t = (-b - sqrtf(delta)) / (2.0f * a);
-
-            if (t >= t_min && t <= t_max)
+            double sqrt_delta = sqrt(delta);
+            for (double t : { (-b - sqrt_delta) / (2.0 * a), (-b + sqrt_delta) / (2.0 * a) })
             {
-                hit_record.t = t;
-                hit_record.p = ray.point(t);
-                hit_record.normal = (hit_record.p - c) / r;
+                if (t >= t_min && t <= t_max)
+                {
+                    hit_record.t = t;
+                    hit_record.p = ray.point(t);
+                    hit_record.normal = (hit_record.p - m_Center) / m_Radius;
+                    hit_record.material = m_Material;
 
-                return true;
-            }
-
-            t = (-b + sqrtf(delta)) / (2.0f * a);
-
-            if (t >= t_min && t <= t_max)
-            {
-                hit_record.t = t;
-                hit_record.p = ray.point(t);
-                hit_record.normal = (hit_record.p - c) / r;
-
-                return true;
+                    return true;
+                }
             }
         }
 
@@ -47,11 +39,11 @@ namespace rt
 
     const Vec3& Sphere::center() const
     {
-        return c;
+        return m_Center;
     }
 
-    float Sphere::radius() const
+    double Sphere::radius() const
     {
-        return r;
+        return m_Radius;
     }
 }

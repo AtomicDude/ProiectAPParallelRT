@@ -11,20 +11,20 @@ namespace rt
     class Image
     {
     public:
-        Image(int _width, int _height);
-        void setBackgroundGradient(const Vec3& _upColor, const Vec3& _downColor);
-        void emplaceSphere(const Vec3& c, float r);
-        void render(const std::string& path, const Camera& camera, int antialiasing = 16);
+        Image(uint32_t width, uint32_t height);
+        void setBackgroundGradient(const Vec3& downColor, const Vec3& upColor);
+        void emplaceSphere(const Vec3& c, double r, const std::shared_ptr<Material>& material);
+        void render(const std::string& path, const Camera& camera, uint32_t samples = 64, uint32_t depth = 32);
 
     private:
-        bool hit(const Ray& ray, float t_min, float t_max, HitRecord& hit_record) const;
-        Vec3 pixel(const Ray& ray) const;
+        bool hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const;
+        Vec3 computeColor(const Ray& ray, uint32_t depth) const;
 
     private:
-        int width;
-        int height;
-        Vec3 upColor;
-        Vec3 downColor;
-        std::vector<std::unique_ptr<Drawable>> drawables;
+        uint32_t m_Width;
+        uint32_t m_Height;
+        Vec3 m_DownColor;
+        Vec3 m_UpColor;
+        std::vector<std::shared_ptr<Drawable>> m_Drawables;
     };
 }

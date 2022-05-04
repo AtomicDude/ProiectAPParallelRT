@@ -8,12 +8,12 @@
 
 namespace rt
 {
-    class Image
+    class Scene
     {
     public:
-        Image(uint32_t width, uint32_t height);
+        Scene(uint32_t width, uint32_t height);
         void setBackgroundGradient(const Vec3& downColor, const Vec3& upColor);
-        void emplaceSphere(const Vec3& c, double r, const std::shared_ptr<Material>& material);
+        void add(const std::shared_ptr<Drawable>& drawable);
         void render(const std::string& path, const Camera& camera, uint32_t samples = 64, uint32_t depth = 32);
 
     private:

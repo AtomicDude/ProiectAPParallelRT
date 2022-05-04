@@ -1,30 +1,30 @@
-#include "Image.h"
+#include "Scene.h"
 
 #include "../Utility/Utility.h"
 #include <fstream>
 
 namespace rt
 {
-    Image::Image(uint32_t width, uint32_t height):
+    Scene::Scene(uint32_t width, uint32_t height):
         m_Width(width),
         m_Height(height)
     {
     }
 
-    void Image::setBackgroundGradient(const Vec3& downColor, const Vec3& upColor)
+    void Scene::setBackgroundGradient(const Vec3& downColor, const Vec3& upColor)
     {
         m_DownColor = downColor;
         m_UpColor = upColor;
     }
 
-    void Image::emplaceSphere(const Vec3& c, double r, const std::shared_ptr<Material>& material)
+    void Scene::add(const std::shared_ptr<Drawable>& drawable)
     {
-        m_Drawables.push_back(std::make_shared<Sphere>(c, r, material));
+        m_Drawables.push_back(drawable);
     }
 
-    void Image::render(const std::string& path, const Camera& camera, uint32_t samples, uint32_t depth)
+    void Scene::render(const std::string& path, const Camera& camera, uint32_t samples, uint32_t depth)
     {
-        std::vector<Vec3> pixels(m_Width * m_Height);
+        std::vector<Vec3> pixels(static_cast<size_t>(m_Width) * static_cast<size_t>(m_Height));
 
         std::fstream fout(path, std::iostream::out);
 
@@ -66,7 +66,7 @@ namespace rt
         }
     }
 
-    bool Image::hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const
+    bool Scene::hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const
     {
         HitRecord record;
         bool intersection = false;
@@ -85,7 +85,7 @@ namespace rt
         return intersection;
     }
 
-    Vec3 Image::computeColor(const Ray& ray, uint32_t depth) const
+    Vec3 Scene::computeColor(const Ray& ray, uint32_t depth) const
     {
         if (depth == 0)
         {

@@ -10,7 +10,7 @@
 
 int main()
 {
-    uint32_t factor = 40;
+    uint32_t factor = 1;
     uint32_t width = 16 * factor;
     uint32_t height = 9 * factor;
     

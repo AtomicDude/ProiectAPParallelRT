@@ -24,7 +24,8 @@ project (PROJECT_NAME)
     files
     {
         "src/**.h",
-        "src/**.cpp"
+        "src/**.cpp",
+        "src/**.c"
     }
 
     filter "configurations:Debug"

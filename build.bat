@@ -2,11 +2,11 @@
 SETLOCAL EnableDelayedExpansion
 
 SET srcFiles=
-FOR /r %%f in (*.cpp) DO (
+FOR /r %%f in (*.c??) DO (
     SET srcFiles=!srcFiles! %%f
 )
 
-ECHO "Building files:" %srcFiles%
+REM ECHO "Building files:" %srcFiles%
 
 SET outName=raytracing
 SET outDir=bin
@@ -16,4 +16,5 @@ SET includeFlags=-Isrc
 SET linkerFlags=
 SET defines=
 
+IF NOT EXIST %outDir% MKDIR %outDir%
 %cc% %srcFiles% %compilerFlags% -o %outDir%\%outName%.exe %defines% %includeFlags% %linkerFlags%

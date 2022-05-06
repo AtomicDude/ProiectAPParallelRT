@@ -20,6 +20,6 @@ namespace rt
 
     inline double random_double(double min = 0.0, double max = 1.0)
     {
-        return min + static_cast<double>(rand()) / static_cast<double>(RAND_MAX + 1) * (max - min);
+        return min + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1.0) * (max - min);
     }
 }

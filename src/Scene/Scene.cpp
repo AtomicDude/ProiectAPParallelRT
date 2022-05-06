@@ -2,6 +2,7 @@
 
 #include "../Utility/Utility.h"
 #include "../stb_image/stb_image_write.h"
+#include <mpi/mpi.h>
 
 namespace rt
 {
@@ -24,11 +25,20 @@ namespace rt
         m_Drawables.push_back(drawable);
     }
 
-    void Scene::render(const Camera& camera, uint32_t samples, uint32_t depth, double gamma)
+    void Scene::render(
+            const Camera& camera,
+            uint32_t x_start,
+            uint32_t y_start,
+            uint32_t x_size,
+            uint32_t y_size,
+            uint32_t samples,
+            uint32_t depth,
+            double gamma
+        )
     {
-        for (uint32_t y = 0; y < m_Height; y++)
+        for (uint32_t y = y_start; y < y_size; y++)
         {
-            for (uint32_t x = 0; x < m_Width; x++)
+            for (uint32_t x = x_start; x < x_size; x++)
             {
                 Vec3 color(0.0, 0.0, 0.0);
 

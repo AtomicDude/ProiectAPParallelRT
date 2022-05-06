@@ -14,7 +14,16 @@ namespace rt
         Scene(uint32_t width, uint32_t height, uint32_t channels = 3);
         void setBackgroundGradient(const Vec3& downColor, const Vec3& upColor);
         void add(const std::shared_ptr<Drawable>& drawable);
-        void render(const Camera& camera, uint32_t samples = 64, uint32_t depth = 32, double gamma = 1.0);
+        void render(
+            const Camera& camera,
+            uint32_t x_start,
+            uint32_t y_start,
+            uint32_t x_size,
+            uint32_t y_size,
+            uint32_t samples = 64,
+            uint32_t depth = 32,
+            double gamma = 1.0
+        );
         void writePNG(const std::string& path) const;
 
     private:

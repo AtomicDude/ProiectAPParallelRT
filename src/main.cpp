@@ -10,7 +10,7 @@
 
 int main()
 {
-    uint32_t factor = 1;
+    uint32_t factor = 20;
     uint32_t width = 16 * factor;
     uint32_t height = 9 * factor;
     
@@ -50,7 +50,26 @@ int main()
 
     std::cout << "Rendering...\n";
     auto t0 = clock.now();
-    scene.render(camera, 64, 32, 1.5);
+    scene.render(
+        camera, //camera
+        0,      // x_start
+        0,      // y_start
+        width/2,  // x_size
+        height, // y_size
+        64,     // samples per pixel
+        32,     // max ray depth (bounces)
+        1.5     // gamma correction
+    );
+    scene.render(
+        camera, //camera
+        width/2,      // x_start
+        0,      // y_start
+        width,  // x_size
+        height, // y_size
+        64,     // samples per pixel
+        32,     // max ray depth (bounces)
+        1.5     // gamma correction
+    );
     auto t1 = clock.now();
 
     std::cout << "Done. ("  << std::chrono::duration<double, std::milli>(t1 - t0).count() << "ms)\n";

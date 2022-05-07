@@ -17,7 +17,7 @@ fi
 
 output="$( ( $cc $srcFiles $compilerFlags -o $outDir/$outName $defines $includeFlags $linkerFlags; ) 2>&1 )"
 
-bash "custom_clear.sh"
+clear
 GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 RESET='\033[0m'

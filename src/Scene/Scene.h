@@ -18,13 +18,14 @@ namespace rt
             const Camera& camera,
             uint32_t x_start,
             uint32_t y_start,
-            uint32_t x_size,
-            uint32_t y_size,
+            uint32_t width,
+            uint32_t height,
             uint32_t samples = 64,
             uint32_t depth = 32,
             double gamma = 1.0
         );
         void writePNG(const std::string& path) const;
+        std::vector<uint8_t>& imageVector();
 
     private:
         bool hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const;

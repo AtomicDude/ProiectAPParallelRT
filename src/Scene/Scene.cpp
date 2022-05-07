@@ -2,7 +2,6 @@
 
 #include "../Utility/Utility.h"
 #include "../stb_image/stb_image_write.h"
-#include <mpi/mpi.h>
 
 namespace rt
 {
@@ -10,7 +9,7 @@ namespace rt
         m_Width(width),
         m_Height(height),
         m_Channels(channels),
-        m_ImageData(width * height * channels)
+        m_ImageData(width * height * channels, 255)
     {
     }
 
@@ -29,16 +28,16 @@ namespace rt
             const Camera& camera,
             uint32_t x_start,
             uint32_t y_start,
-            uint32_t x_size,
-            uint32_t y_size,
+            uint32_t width,
+            uint32_t height,
             uint32_t samples,
             uint32_t depth,
             double gamma
         )
     {
-        for (uint32_t y = y_start; y < y_size; y++)
+        for (uint32_t y = y_start; y < y_start + height; y++)
         {
-            for (uint32_t x = x_start; x < x_size; x++)
+            for (uint32_t x = x_start; x < x_start + width; x++)
             {
                 Vec3 color(0.0, 0.0, 0.0);
 
@@ -78,6 +77,11 @@ namespace rt
             m_ImageData.data(),
             static_cast<int>(m_Width * m_Channels)
         );
+    }
+
+    std::vector<uint8_t>& Scene::imageVector()
+    {
+        return m_ImageData;
     }
 
     bool Scene::hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const

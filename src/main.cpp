@@ -4,26 +4,19 @@
 #include "Material/DielectricMaterial.h"
 
 #include "Camera/Camera.h"
+#include "Area/Area.h"
 #include "Scene/Scene.h"
+
 #include <iostream>
 #include <chrono>
-
 #include <mpi.h>
-
-struct PixelArea
-{
-    uint32_t x;
-    uint32_t y;
-    uint32_t width;
-    uint32_t height;
-};
 
 int main(int argc, char** argv)
 {
     const double ratio_w = 16.0;
     const double ratio_h = 9.0;
     const double ratio = ratio_w / ratio_h;
-    const uint32_t height = 720;
+    const uint32_t height = 100;
     const uint32_t width = static_cast<uint32_t>(ratio * static_cast<double>(height));
     const uint32_t channels = 3;
 
@@ -36,7 +29,7 @@ int main(int argc, char** argv)
         0.0                                                         // aperture
     );
     
-    rt::Scene scene(width, height, channels);
+    rt::Scene scene(width, height);
     scene.setBackgroundGradient(rt::Vec3(0.2, 0.4, 1.0), rt::Vec3(1.0, 1.0, 1.0));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(0.0, -100.5, -1.0),
@@ -75,14 +68,22 @@ int main(int argc, char** argv)
     uint32_t pixelRows = height / comm_size;
     uint32_t remainingRows = height % comm_size;
 
-    PixelArea pixelArea;
-    pixelArea.x = 0;
-    pixelArea.y = height - (comm_rank + 1) * pixelRows;
-    pixelArea.width = width;
-    pixelArea.height = pixelRows;
+    uint32_t x_start = 0;
+    uint32_t y_start = (comm_size - comm_rank - 1) * pixelRows;
+
+    rt::Area imageArea;
+    imageArea.x = 0;
+    imageArea.y = 0;
+    imageArea.width = width;
+    imageArea.height = pixelRows;
+
+    rt::Image globalImage(channels);
+    rt::Image localImage(imageArea.width, imageArea.height, channels);
 
     if (comm_rank == root)
     {
+        globalImage.resize(width, height);
+
         std::cout << "Rendering...\n" << std::flush;
         t0 = clock.now();
     }
@@ -92,28 +93,25 @@ int main(int argc, char** argv)
     std::cout << "Start " << comm_rank << "\n";
 
     scene.render(
+        localImage,         // outImage
         camera,             // camera
-        pixelArea.x,        // x_start
-        pixelArea.y,        // y_start
-        pixelArea.width,    // width
-        pixelArea.height,   // height
+        x_start,            // x_start
+        y_start,            // y_start
+        imageArea,          // imageArea
         64,                 // samples per pixel
         32,                 // max ray depth (bounces)
         1.5                 // gamma correction
     );
 
+    localImage.write(std::to_string(comm_rank) + ".png");
     std::cout << "Stop " << comm_rank << "\n";
 
-    std::vector<uint8_t>& imageVector = scene.imageVector();
-    const size_t offset = (height - pixelArea.y - pixelArea.height) * pixelArea.width * channels + pixelArea.x * channels;
-    const size_t send_size = pixelArea.width * pixelArea.height * channels;
-
     MPI_Gather(
-        imageVector.data() + offset,
-        static_cast<int>(send_size),
+        localImage.data(),
+        static_cast<int>(localImage.size()),
         MPI_BYTE,
-        imageVector.data(),
-        static_cast<int>(send_size),
+        globalImage.data(),
+        static_cast<int>(localImage.size()),
         MPI_BYTE,
         root,
         comm
@@ -123,18 +121,21 @@ int main(int argc, char** argv)
     {
         if (remainingRows > 0)
         {
-            pixelArea.x = 0;
-            pixelArea.y = 0;
-            pixelArea.width = width;
-            pixelArea.height = remainingRows;
+            x_start = 0;
+            y_start = 0;
+
+            imageArea.x = 0;
+            imageArea.y = height - remainingRows;
+            imageArea.width = width;
+            imageArea.height = remainingRows;
 
             // render the remaining rows
             scene.render(
+                globalImage,        // outImage
                 camera,             // camera
-                pixelArea.x,        // x_start
-                pixelArea.y,        // y_start
-                pixelArea.width,    // width
-                pixelArea.height,   // height
+                x_start,            // x_start
+                y_start,            // y_start
+                imageArea,          // imageArea
                 64,                 // samples per pixel
                 32,                 // max ray depth (bounces)
                 1.5                 // gamma correction
@@ -146,7 +147,7 @@ int main(int argc, char** argv)
 
         std::cout << "Writing image...\n";
         t0 = clock.now();
-        scene.writePNG("spheres.png");
+        globalImage.write("spheres.png");
         t1 = clock.now();
 
         std::cout << "Done. (" << std::chrono::duration<double>(t1 - t0).count() << "s)\n";

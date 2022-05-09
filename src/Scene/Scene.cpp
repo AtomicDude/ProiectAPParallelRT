@@ -1,15 +1,14 @@
 #include "Scene.h"
 
 #include "../Utility/Utility.h"
-#include "../stb_image/stb_image_write.h"
+#include <fstream>
+#include <iostream>
 
 namespace rt
 {
-    Scene::Scene(uint32_t width, uint32_t height, uint32_t channels):
+    Scene::Scene(uint32_t width, uint32_t height):
         m_Width(width),
-        m_Height(height),
-        m_Channels(channels),
-        m_ImageData(width * height * channels, 255)
+        m_Height(height)
     {
     }
 
@@ -25,19 +24,24 @@ namespace rt
     }
 
     void Scene::render(
+            Image& image,
             const Camera& camera,
             uint32_t x_start,
             uint32_t y_start,
-            uint32_t width,
-            uint32_t height,
+            const Area& imageArea,
             uint32_t samples,
             uint32_t depth,
             double gamma
         )
     {
-        for (uint32_t y = y_start; y < y_start + height; y++)
+        uint32_t index_x = 0;
+        uint32_t index_y = 0;
+
+        //std::ofstream fout(std::to_string(y_start) + ".txt");
+
+        for (int64_t y = y_start + imageArea.height - 1; y >= static_cast<int64_t>(y_start); y--, index_x = 0, index_y++)
         {
-            for (uint32_t x = x_start; x < x_start + width; x++)
+            for (uint32_t x = x_start; x < x_start + imageArea.width; x++, index_x++)
             {
                 Vec3 color(0.0, 0.0, 0.0);
 
@@ -58,30 +62,16 @@ namespace rt
                     color = Vec3(pow(color.x, inv_gamma), pow(color.y, inv_gamma), pow(color.z, inv_gamma));
                 }
 
-                uint32_t index = (m_Height - 1 - y) * m_Width * m_Channels + x * m_Channels;
-
-                m_ImageData[index + 0] = static_cast<uint8_t>(255.0 * color.r);
-                m_ImageData[index + 1] = static_cast<uint8_t>(255.0 * color.g);
-                m_ImageData[index + 2] = static_cast<uint8_t>(255.0 * color.b);
+                //fout << "(" << index_x << "," << index_y << ")\n";
+                image.setPixel(
+                    imageArea.x + index_x,
+                    imageArea.y + index_y,
+                    static_cast<uint8_t>(255.0 * color.r),
+                    static_cast<uint8_t>(255.0 * color.g),
+                    static_cast<uint8_t>(255.0 * color.b)
+                );
             }
         }
-    }
-
-    void Scene::writePNG(const std::string& path) const
-    {
-        stbi_write_png(
-            path.c_str(),
-            static_cast<int>(m_Width),
-            static_cast<int>(m_Height),
-            static_cast<int>(m_Channels),
-            m_ImageData.data(),
-            static_cast<int>(m_Width * m_Channels)
-        );
-    }
-
-    std::vector<uint8_t>& Scene::imageVector()
-    {
-        return m_ImageData;
     }
 
     bool Scene::hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const

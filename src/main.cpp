@@ -8,6 +8,7 @@
 #include "Scene/Scene.h"
 
 #include <iostream>
+#include <fstream>
 #include <chrono>
 #include <mpi/mpi.h>
 
@@ -16,7 +17,7 @@ int main(int argc, char **argv)
     const double ratio_w = 16.0;
     const double ratio_h = 9.0;
     const double ratio = ratio_w / ratio_h;
-    const uint32_t height = 100;
+    const uint32_t height = 10;
     const uint32_t width = static_cast<uint32_t>(ratio * static_cast<double>(height));
     const uint32_t channels = 3;
 
@@ -58,8 +59,6 @@ int main(int argc, char **argv)
     int32_t comm_size;
     int32_t comm_rank;
     const int32_t root = 0;
-
-    std::vector<MPI_Request> requests;
     MPI_Comm comm = MPI_COMM_WORLD;
 
     MPI_Comm_size(comm, &comm_size);
@@ -68,17 +67,43 @@ int main(int argc, char **argv)
     const int32_t default_render_height = static_cast<int32_t>(height / comm_size);
     const int32_t default_render_width = static_cast<int32_t>(width / comm_size);
 
-    for (int32_t y = 0; y < height; y += default_render_height)
+    // for (int32_t y = height; y > 0 ; y -= default_render_height)
+    // {
+    //     for (uint32_t x = 0; x < width; x += default_render_width)
+    //     {
+    //         index_list.push_back(rt::Area(
+    //             x,
+    //             y - default_render_height < 0 ? 0 : y - default_render_height,
+    //             x + default_render_width <= width ? default_render_width : width - x,
+    //             y - default_render_height > 0 ? default_render_height : y)
+    //         );
+    //     }
+    // }
+
+    for (uint32_t y = 0; y < height ; y += default_render_height)
     {
-        for (int32_t x = 0; x < width; x += default_render_width)
+        for (uint32_t x = 0; x < width; x += default_render_width)
         {
-            index_list.push_back(rt::Area(x, y, x + default_render_width <= width ? default_render_width : width - x, y + default_render_height <= height ? default_render_height : height - y));
+            index_list.push_back(rt::Area(
+                x,
+                y,
+                x + default_render_width <= width ? default_render_width : width - x,
+                y + default_render_height <= height ? default_render_height : height - y)
+            );
         }
     }
 
+    if (comm_rank == root)
+    {
+        std::ofstream fout("index.txt");
+
+        for (auto& area : index_list)
+        {
+            fout << "(" << area.x << "," << area.y << "," << area.width << "," << area.height << ")\n";
+        }
+    }
     rt::Image globalImage(channels);
-    
-    MPI_Request request;
+    std::vector<MPI_Request> requests;
 
     if (comm_rank == root)
     {
@@ -93,17 +118,22 @@ int main(int argc, char **argv)
     
     if (comm_rank == root)
     {
-        for (int32_t i = 0; i < index_list.size(); i++)
+        for (uint32_t i = 0; i < index_list.size(); i++)
         {
             rt::Area& area = index_list[i];
-            int32_t area_size = area.height * area.width * channels;
-            int32_t offset = area.y * width * channels + area.x * channels;
 
-            MPI_Irecv(globalImage.data() + offset, area_size, MPI_BYTE, i % comm_size, i, comm, &requests[i]);
+            MPI_Datatype blockType;
+            MPI_Type_vector(area.height, area.width * channels, width * channels, MPI_BYTE, &blockType);
+            MPI_Type_commit(&blockType);
+
+            int32_t area_size = static_cast<int32_t>(area.height * area.width * channels);
+            int32_t offset = static_cast<int32_t>((height - area.y) * width * channels + area.x * channels);
+            
+            MPI_Irecv(globalImage.data() + offset, 1, blockType, i % comm_size, i, comm, &requests[i]);
         }
     }
 
-    for (int32_t i = comm_rank; i < index_list.size(); i += comm_size)
+    for (uint32_t i = comm_rank; i < index_list.size(); i += comm_size)
     {
         std::cout << "Start " << comm_rank << "\n";
         rt::Area &area = index_list[i];
@@ -123,6 +153,7 @@ int main(int argc, char **argv)
 
         std::cout << "Stop " << comm_rank << "\n";
 
+        localImage.write(std::to_string(comm_rank) + std::to_string(i) + ".png");
         MPI_Send(localImage.data(), localImage.size(), MPI_BYTE, root, i, comm);
     }
 

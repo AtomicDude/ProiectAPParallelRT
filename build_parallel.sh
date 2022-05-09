@@ -6,7 +6,7 @@ srcFiles=$(find src/ -name *.c??)
 outName="raytracing"
 outDir="bin"
 cc="mpic++"
-compilerFlags="-Wall"
+compilerFlags="-Wall -fdiagnostics-color=always"
 includeFlags="-Isrc"
 linkerFlags=""
 defines=""
@@ -15,4 +15,15 @@ if !(test -d $outDir); then
     mkdir $outDir
 fi
 
-$cc $srcFiles $compilerFlags -o $outDir/$outName $defines $includeFlags $linkerFlags
+output="$( ( $cc $srcFiles $compilerFlags -o $outDir/$outName $defines $includeFlags $linkerFlags; ) 2>&1 )"
+
+clear
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+RESET='\033[0m'
+currentPath=$(pwd)
+currentCommand=$(basename "$0")
+#echo -e "${GREEN}$USER@$HOSTNAME${RESET}:${BLUE}$currentPath${RESET}$ ./$currentCommand"
+if !( [ -z "$output" ] ); then
+    echo "$output"
+fi

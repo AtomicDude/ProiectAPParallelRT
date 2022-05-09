@@ -1,12 +1,15 @@
 #!/bin/bash
 srcFiles=$(find src/ -name *.c??)
+png=$(find . -name "*.png")
+
+rm -f $png
 
 #echo "Building files: $srcFiles"
 
 outName="raytracing"
 outDir="bin"
 cc="mpic++"
-compilerFlags="-Wall -fdiagnostics-color=always"
+compilerFlags="-Wall -fdiagnostics-color=always -O3"
 includeFlags="-Isrc"
 linkerFlags=""
 defines=""

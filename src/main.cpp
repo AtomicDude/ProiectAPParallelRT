@@ -9,9 +9,9 @@
 
 #include <iostream>
 #include <chrono>
-#include <mpi.h>
+#include <mpi/mpi.h>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     const double ratio_w = 16.0;
     const double ratio_h = 9.0;
@@ -21,42 +21,40 @@ int main(int argc, char** argv)
     const uint32_t channels = 3;
 
     rt::Camera camera(
-        rt::Vec3(0, 0, 0),                                          // eye
-        rt::Vec3(0.0, 0.0, -1.0),                                   // lookAt
-        rt::Vec3(0.0, 1.0, 0.0),                                    // up
-        90.0,                                                       // fov
-        static_cast<double>(width) / static_cast<double>(height),   // aspect ratio
-        0.0                                                         // aperture
+        rt::Vec3(0, 0, 0),                                        // eye
+        rt::Vec3(0.0, 0.0, -1.0),                                 // lookAt
+        rt::Vec3(0.0, 1.0, 0.0),                                  // up
+        90.0,                                                     // fov
+        static_cast<double>(width) / static_cast<double>(height), // aspect ratio
+        0.0                                                       // aperture
     );
-    
+
     rt::Scene scene(width, height);
     scene.setBackgroundGradient(rt::Vec3(0.2, 0.4, 1.0), rt::Vec3(1.0, 1.0, 1.0));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(0.0, -100.5, -1.0),
         100.0,
-        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0))
-    ));
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0))));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(-1.0, 0.0, -1.0),
         0.5,
-        std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5)
-    ));
+        std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5)));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(0.0, 0.0, -1.0),
         0.5,
-        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2))
-    ));
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2))));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(1.0, 0.0, -1.0),
         0.5,
-        std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01)
-    ));
+        std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01)));
 
     std::chrono::steady_clock clock;
     std::chrono::steady_clock::time_point t0;
 
+    std::vector<rt::Area> index_list;
+
     MPI_Init(&argc, &argv);
-    
+
     int32_t comm_size;
     int32_t comm_rank;
     const int32_t root = 0;
@@ -65,85 +63,69 @@ int main(int argc, char** argv)
     MPI_Comm_size(comm, &comm_size);
     MPI_Comm_rank(comm, &comm_rank);
 
-    uint32_t pixelRows = height / comm_size;
-    uint32_t remainingRows = height % comm_size;
+    const int32_t default_render_height = static_cast<int32_t>(height / comm_size);
+    const int32_t default_render_width = static_cast<int32_t>(width / comm_size);
 
-    uint32_t x_start = 0;
-    uint32_t y_start = (comm_size - comm_rank - 1) * pixelRows;
-
-    rt::Area imageArea;
-    imageArea.x = 0;
-    imageArea.y = 0;
-    imageArea.width = width;
-    imageArea.height = pixelRows;
+    for (int32_t y = 0; y < height; y += default_render_height)
+    {
+        for (int32_t x = 0; x < width; x += default_render_width)
+        {
+            index_list.push_back(rt::Area(x, y, x + default_render_width <= width ? default_render_width : width - x, y + default_render_height <= height ? default_render_height : height - y));
+        }
+    }
 
     rt::Image globalImage(channels);
-    rt::Image localImage(imageArea.width, imageArea.height, channels);
+    
 
     if (comm_rank == root)
     {
         globalImage.resize(width, height);
 
-        std::cout << "Rendering...\n" << std::flush;
+        std::cout << "Rendering...\n"
+                  << std::flush;
         t0 = clock.now();
     }
 
     MPI_Barrier(comm); // wait for root to output initialize
 
-    std::cout << "Start " << comm_rank << "\n";
+    for (int32_t i = comm_rank; i < index_list.size() - comm_rank; i += comm_size)
+    {
+        std::cout << "Start " << comm_rank << "\n";
+        rt::Area &area = index_list[i];
 
-    scene.render(
-        localImage,         // outImage
-        camera,             // camera
-        x_start,            // x_start
-        y_start,            // y_start
-        imageArea,          // imageArea
-        64,                 // samples per pixel
-        32,                 // max ray depth (bounces)
-        1.5                 // gamma correction
-    );
+        rt::Image localImage(area.width, area.height, channels);
 
-    localImage.write(std::to_string(comm_rank) + ".png");
-    std::cout << "Stop " << comm_rank << "\n";
+        scene.render(
+            localImage,                              // outImage
+            camera,                                  // camera
+            area.x,                                  // x_start
+            area.y,                                  // y_start
+            rt::Area(0, 0, area.width, area.height), // imageArea
+            64,                                      // samples per pixel
+            32,                                      // max ray depth (bounces)
+            1.5                                      // gamma correction
+        );
 
-    MPI_Gather(
-        localImage.data(),
-        static_cast<int>(localImage.size()),
-        MPI_BYTE,
-        globalImage.data(),
-        static_cast<int>(localImage.size()),
-        MPI_BYTE,
-        root,
-        comm
-    );
+        std::cout << "Stop " << comm_rank << "\n";
+
+        MPI_Send(localImage.data(), localImage.size(), MPI_BYTE, root, 0, comm);
+    }
 
     if (comm_rank == root)
     {
-        if (remainingRows > 0)
+        for (int32_t i = 0; i < index_list.size(); i++)
         {
-            x_start = 0;
-            y_start = 0;
+            rt::Area &area = index_list[i];
+            int32_t area_size = area.height * area.width * channels;
+            int32_t offset = area.x * channels + area.y * width * channels;
 
-            imageArea.x = 0;
-            imageArea.y = height - remainingRows;
-            imageArea.width = width;
-            imageArea.height = remainingRows;
+            MPI_Request request;
 
-            // render the remaining rows
-            scene.render(
-                globalImage,        // outImage
-                camera,             // camera
-                x_start,            // x_start
-                y_start,            // y_start
-                imageArea,          // imageArea
-                64,                 // samples per pixel
-                32,                 // max ray depth (bounces)
-                1.5                 // gamma correction
-            );
+            MPI_Irecv(globalImage.data() + offset, area_size, MPI_BYTE, i % comm_size, MPI_ANY_TAG, comm, &request);
         }
 
         auto t1 = clock.now();
-        std::cout << "Done. ("  << std::chrono::duration<double>(t1 - t0).count() << "s)\n";
+        std::cout << "Done. (" << std::chrono::duration<double>(t1 - t0).count() << "s)\n";
 
         std::cout << "Writing image...\n";
         t0 = clock.now();

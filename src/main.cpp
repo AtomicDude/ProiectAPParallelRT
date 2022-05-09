@@ -58,6 +58,8 @@ int main(int argc, char **argv)
     int32_t comm_size;
     int32_t comm_rank;
     const int32_t root = 0;
+
+    std::vector<MPI_Request> requests;
     MPI_Comm comm = MPI_COMM_WORLD;
 
     MPI_Comm_size(comm, &comm_size);
@@ -76,19 +78,32 @@ int main(int argc, char **argv)
 
     rt::Image globalImage(channels);
     
+    MPI_Request request;
 
     if (comm_rank == root)
     {
         globalImage.resize(width, height);
+        requests.resize(index_list.size());
 
-        std::cout << "Rendering...\n"
-                  << std::flush;
+        std::cout << "Rendering..." << std::endl;
         t0 = clock.now();
     }
 
     MPI_Barrier(comm); // wait for root to output initialize
+    
+    if (comm_rank == root)
+    {
+        for (int32_t i = 0; i < index_list.size(); i++)
+        {
+            rt::Area& area = index_list[i];
+            int32_t area_size = area.height * area.width * channels;
+            int32_t offset = area.y * width * channels + area.x * channels;
 
-    for (int32_t i = comm_rank; i < index_list.size() - comm_rank; i += comm_size)
+            MPI_Irecv(globalImage.data() + offset, area_size, MPI_BYTE, i % comm_size, i, comm, &requests[i]);
+        }
+    }
+
+    for (int32_t i = comm_rank; i < index_list.size(); i += comm_size)
     {
         std::cout << "Start " << comm_rank << "\n";
         rt::Area &area = index_list[i];
@@ -108,21 +123,12 @@ int main(int argc, char **argv)
 
         std::cout << "Stop " << comm_rank << "\n";
 
-        MPI_Send(localImage.data(), localImage.size(), MPI_BYTE, root, 0, comm);
+        MPI_Send(localImage.data(), localImage.size(), MPI_BYTE, root, i, comm);
     }
 
     if (comm_rank == root)
     {
-        for (int32_t i = 0; i < index_list.size(); i++)
-        {
-            rt::Area &area = index_list[i];
-            int32_t area_size = area.height * area.width * channels;
-            int32_t offset = area.x * channels + area.y * width * channels;
-
-            MPI_Request request;
-
-            MPI_Irecv(globalImage.data() + offset, area_size, MPI_BYTE, i % comm_size, MPI_ANY_TAG, comm, &request);
-        }
+        MPI_Waitall(index_list.size(), requests.data(), MPI_STATUSES_IGNORE);
 
         auto t1 = clock.now();
         std::cout << "Done. (" << std::chrono::duration<double>(t1 - t0).count() << "s)\n";

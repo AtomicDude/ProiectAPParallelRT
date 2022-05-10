@@ -16,9 +16,12 @@ int main(int argc, char **argv)
     const double ratio_w = 16.0;
     const double ratio_h = 9.0;
     const double ratio = ratio_w / ratio_h;
-    const uint32_t height = 100;
+    const uint32_t height = 720;
     const uint32_t width = static_cast<uint32_t>(ratio * static_cast<double>(height));
     const uint32_t channels = 3;
+    bool useBorder = true;
+    const uint32_t width_granularity = 2;
+    const uint32_t height_granularity = 2;
 
     rt::Camera camera(
         rt::Vec3(0, 0, 0),                                        // eye
@@ -63,8 +66,8 @@ int main(int argc, char **argv)
     MPI_Comm_size(comm, &comm_size);
     MPI_Comm_rank(comm, &comm_rank);
 
-    const int32_t default_area_height = static_cast<int32_t>(height / comm_size);
-    const int32_t default_area_width = static_cast<int32_t>(width / comm_size);
+    const int32_t default_area_height = static_cast<int32_t>(height / (comm_size * width_granularity));
+    const int32_t default_area_width = static_cast<int32_t>(width / (comm_size * height_granularity));
 
     for (uint32_t y = 0; y < height ; y += default_area_height)
     {
@@ -133,11 +136,11 @@ int main(int argc, char **argv)
             rt::Area(0, 0, area.width, area.height), // imageArea
             64,                                      // samples per pixel
             32,                                      // max ray depth (bounces)
-            1.5                                      // gamma correction
+            1.5,                                     // gamma correction
+            useBorder                                // border
         );
 
         std::cout << "Stop " << comm_rank << "\n";
-
         MPI_Send(localImage.data(), localImage.size(), MPI_BYTE, root, i, comm);
     }
 

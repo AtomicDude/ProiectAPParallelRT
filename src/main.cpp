@@ -8,7 +8,6 @@
 #include "Scene/Scene.h"
 
 #include <iostream>
-#include <fstream>
 #include <chrono>
 #include <mpi/mpi.h>
 
@@ -93,7 +92,6 @@ int main(int argc, char **argv)
     int32_t default_area_width = static_cast<int32_t>(width / (comm_size * height_granularity));
     default_area_width = default_area_width == 0 ? 1 : default_area_width;
 
-
     useBorder = (default_area_height == 1 || default_area_width == 1) ? false : useBorder;
 
     for (uint32_t y = 0; y < height; y += default_area_height)
@@ -105,14 +103,10 @@ int main(int argc, char **argv)
                     x,
                     y,
                     (x + default_area_width) < width ? default_area_width : (width - x),
-                    (y + default_area_height) < height ? default_area_height : (height - y)));
+                    (y + default_area_height) < height ? default_area_height : (height - y)
+                )
+            );
         }
-    }
-
-    std::ofstream fout("index.txt");
-    for (auto &area : renderAreas)
-    {
-        fout << area.x << " " << area.y << " " << area.width << " " << area.height << " \n ";
     }
 
     rt::Image globalImage(channels);
@@ -152,15 +146,33 @@ int main(int argc, char **argv)
         }
     }
 
+    std::vector<rt::Image> localImages;
+    std::vector<MPI_Request> sendRequests;
+    localImages.reserve(renderAreas.size());
+    sendRequests.reserve(renderAreas.size());
+
     for (uint32_t i = comm_rank; i < renderAreas.size(); i += comm_size)
     {
         std::cout << "Start " << comm_rank << std::endl;
         rt::Area &area = renderAreas[i];
 
-        rt::Image localImage(area.width, area.height, channels);
+        int32_t index = MPI_UNDEFINED;
+        int32_t flag = 0;
+        MPI_Testany(sendRequests.size(), sendRequests.data(), &index, &flag, MPI_STATUS_IGNORE);
+
+        if (index == MPI_UNDEFINED)
+        {            
+            MPI_Request request;
+            sendRequests.push_back(request);
+            localImages.emplace_back(channels);
+
+            index = sendRequests.size() - 1;
+        }
+
+        localImages[index].resize(area.width, area.height);
 
         scene.render(
-            localImage,                              // outImage
+            localImages[index],                      // outImage
             camera,                                  // camera
             area.x,                                  // x_start
             area.y,                                  // y_start
@@ -173,7 +185,7 @@ int main(int argc, char **argv)
 
         std::cout << "Stop " << comm_rank << std::endl;
 
-        MPI_Send(localImage.data(), localImage.size(), MPI_BYTE, root, i, comm);
+        MPI_Isend(localImages[index].data(), localImages[index].size(), MPI_BYTE, root, i, comm, &sendRequests[index]);
     }
 
     if (comm_rank == root)

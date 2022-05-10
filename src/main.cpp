@@ -8,6 +8,7 @@
 #include "Scene/Scene.h"
 
 #include <iostream>
+#include <fstream>
 #include <chrono>
 #include <mpi/mpi.h>
 
@@ -16,12 +17,32 @@ int main(int argc, char **argv)
     const double ratio_w = 16.0;
     const double ratio_h = 9.0;
     const double ratio = ratio_w / ratio_h;
-    const uint32_t height = 720;
+    uint32_t height = 10;
+    uint32_t width_granularity = 2;
+    bool useBorder = false;
+
+    if (argc == 2)
+    {
+        height = std::stoi(argv[1]);
+    }
+
+    if (argc == 3)
+    {
+        height = std::stoi(argv[1]);
+        width_granularity = std::stoi(argv[2]);
+    }
+
+    if (argc == 4)
+    {
+        height = std::stoi(argv[1]);
+        width_granularity = std::stoi(argv[2]);
+        useBorder = true;
+    }
+
     const uint32_t width = static_cast<uint32_t>(ratio * static_cast<double>(height));
     const uint32_t channels = 3;
-    bool useBorder = true;
-    const uint32_t width_granularity = 2;
-    const uint32_t height_granularity = 2;
+
+    uint32_t height_granularity = width_granularity;
 
     rt::Camera camera(
         rt::Vec3(0, 0, 0),                                        // eye
@@ -66,10 +87,16 @@ int main(int argc, char **argv)
     MPI_Comm_size(comm, &comm_size);
     MPI_Comm_rank(comm, &comm_rank);
 
-    const int32_t default_area_height = static_cast<int32_t>(height / (comm_size * width_granularity));
-    const int32_t default_area_width = static_cast<int32_t>(width / (comm_size * height_granularity));
+    int32_t default_area_height = static_cast<int32_t>(height / (comm_size * width_granularity));
+    default_area_height = default_area_height == 0 ? 1 : default_area_height;
 
-    for (uint32_t y = 0; y < height ; y += default_area_height)
+    int32_t default_area_width = static_cast<int32_t>(width / (comm_size * height_granularity));
+    default_area_width = default_area_width == 0 ? 1 : default_area_width;
+
+
+    useBorder = (default_area_height == 1 || default_area_width == 1) ? false : useBorder;
+
+    for (uint32_t y = 0; y < height; y += default_area_height)
     {
         for (uint32_t x = 0; x < width; x += default_area_width)
         {
@@ -78,10 +105,14 @@ int main(int argc, char **argv)
                     x,
                     y,
                     (x + default_area_width) < width ? default_area_width : (width - x),
-                    (y + default_area_height) < height ? default_area_height : (height - y)
-                )
-            );
+                    (y + default_area_height) < height ? default_area_height : (height - y)));
         }
+    }
+
+    std::ofstream fout("index.txt");
+    for (auto &area : renderAreas)
+    {
+        fout << area.x << " " << area.y << " " << area.width << " " << area.height << " \n ";
     }
 
     rt::Image globalImage(channels);
@@ -97,12 +128,12 @@ int main(int argc, char **argv)
     }
 
     MPI_Barrier(comm); // wait for root to output initialize
-    
+
     if (comm_rank == root)
     {
         for (uint32_t i = 0; i < renderAreas.size(); i++)
         {
-            rt::Area& area = renderAreas[i];
+            rt::Area &area = renderAreas[i];
 
             MPI_Datatype blockType;
             MPI_Type_vector(area.height, area.width * channels, width * channels, MPI_BYTE, &blockType);
@@ -116,15 +147,15 @@ int main(int argc, char **argv)
             }
 
             uint32_t offset = static_cast<uint32_t>(y) * width * channels + area.x * channels;
-            
+
             MPI_Irecv(globalImage.data() + offset, 1, blockType, i % comm_size, i, comm, &requests[i]);
         }
     }
 
     for (uint32_t i = comm_rank; i < renderAreas.size(); i += comm_size)
     {
-        std::cout << "Start " << comm_rank << "\n";
-        rt::Area& area = renderAreas[i];
+        std::cout << "Start " << comm_rank << std::endl;
+        rt::Area &area = renderAreas[i];
 
         rt::Image localImage(area.width, area.height, channels);
 
@@ -140,7 +171,8 @@ int main(int argc, char **argv)
             useBorder                                // border
         );
 
-        std::cout << "Stop " << comm_rank << "\n";
+        std::cout << "Stop " << comm_rank << std::endl;
+
         MPI_Send(localImage.data(), localImage.size(), MPI_BYTE, root, i, comm);
     }
 

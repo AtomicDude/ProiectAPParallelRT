@@ -1,8 +1,6 @@
 #include "Scene.h"
 
 #include "../Utility/Utility.h"
-#include <fstream>
-#include <iostream>
 
 namespace rt
 {
@@ -37,8 +35,6 @@ namespace rt
         uint32_t index_x = 0;
         uint32_t index_y = 0;
 
-        //std::ofstream fout(std::to_string(y_start) + ".txt");
-
         for (int64_t y = y_start + imageArea.height - 1; y >= static_cast<int64_t>(y_start); y--, index_x = 0, index_y++)
         {
             for (uint32_t x = x_start; x < x_start + imageArea.width; x++, index_x++)
@@ -62,7 +58,6 @@ namespace rt
                     color = Vec3(pow(color.x, inv_gamma), pow(color.y, inv_gamma), pow(color.z, inv_gamma));
                 }
 
-                //fout << "(" << index_x << "," << index_y << ")\n";
                 image.setPixel(
                     imageArea.x + index_x,
                     imageArea.y + index_y,

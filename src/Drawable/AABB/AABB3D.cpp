@@ -37,7 +37,7 @@ namespace rt
             Triangle(d, a, b, m_Material),
             Triangle(b, c, d, m_Material),
             Triangle(e, f, g, m_Material),
-            Triangle(g, h, e, m_Material),
+            Triangle(g, h, e, m_Material)
         };
 
         HitRecord record;

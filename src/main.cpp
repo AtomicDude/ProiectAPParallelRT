@@ -47,7 +47,7 @@ int main(int argc, char **argv)
     uint32_t height_granularity = width_granularity;
 
     rt::Camera camera(
-        rt::Vec3(0, 0, 0),                                        // eye
+        rt::Vec3(0.0, 0.7, 0.0),                                  // eye
         rt::Vec3(0.0, 0.0, -1.0),                                 // lookAt
         rt::Vec3(0.0, 1.0, 0.0),                                  // up
         90.0,                                                     // fov
@@ -60,30 +60,21 @@ int main(int argc, char **argv)
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(0.0, -100.5, -1.0),
         100.0,
-        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0)))
-    );
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0))));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(-1.0, 0.0, -1.0),
         0.5,
-        std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5))
-    );
-    // scene.add(std::make_shared<rt::Sphere>(
-    //     rt::Vec3(0.0, 0.0, -1.0),
-    //     0.5,
-    //     std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2)))
-    // );
+        std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5)));
     scene.add(std::make_shared<rt::AABB3D>(
-        rt::Vec3(-0.5, 0.0, -1.0),
-        0.5,
-        0.5,
-        0.5,
-        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2)))
-    );
+        rt::Vec3(-0.4, -0.4, -0.8),
+        0.8,
+        0.8,
+        0.8,
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.9, 0.0, 0.2))));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(1.0, 0.0, -1.0),
         0.5,
-        std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01))
-    );
+        std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01)));
 
     std::chrono::steady_clock clock;
     std::chrono::steady_clock::time_point t0;
@@ -117,9 +108,7 @@ int main(int argc, char **argv)
                     x,
                     y,
                     (x + default_area_width) < width ? default_area_width : (width - x),
-                    (y + default_area_height) < height ? default_area_height : (height - y)
-                )
-            );
+                    (y + default_area_height) < height ? default_area_height : (height - y)));
         }
     }
 
@@ -175,7 +164,7 @@ int main(int argc, char **argv)
         MPI_Testany(sendRequests.size(), sendRequests.data(), &index, &flag, MPI_STATUS_IGNORE);
 
         if (index == MPI_UNDEFINED)
-        {            
+        {
             MPI_Request request;
             sendRequests.push_back(request);
             localImages.emplace_back(channels);

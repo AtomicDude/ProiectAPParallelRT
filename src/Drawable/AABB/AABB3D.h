@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../Drawable.h"
+#include "AABB2D.h"
+#include <vector>
 
 namespace rt
 {
@@ -11,9 +13,6 @@ namespace rt
         virtual bool hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const override;
 
     private:
-        Vec3 m_Min;
-        double m_Width;
-        double m_Height;
-        double m_Depth;
+        std::vector<std::shared_ptr<AABB2D>> m_Faces;
     };
 }

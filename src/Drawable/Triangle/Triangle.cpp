@@ -12,20 +12,18 @@ namespace rt
         m_B(b),
         m_C(c)
     {
-        Vec3 ab = m_B - m_A;
-        Vec3 ac = m_C - m_A;
-        m_N = Vec3::normalize(Vec3::cross(ab, ac));
+        m_N = Vec3::normalize(Vec3::cross(m_B - m_A, m_C - m_A));
     }
 
     bool Triangle::hit(const Ray& ray, double t_min, double t_max, HitRecord& hit_record) const
-    {
+    {   
         double dot_n_dir = Vec3::dot(m_N, ray.direction());
         if (fabs(dot_n_dir) < EPS)
         {
             return false;
         }
 
-        float t = (Vec3::dot(m_N, m_A) - Vec3::dot(m_N, ray.origin())) / dot_n_dir;
+        double t = (Vec3::dot(m_N, m_A) - Vec3::dot(m_N, ray.origin())) / dot_n_dir;
 
         if (t >= t_min && t <= t_max)
         {

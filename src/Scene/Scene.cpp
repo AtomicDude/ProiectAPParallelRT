@@ -2,7 +2,6 @@
 
 #include "../Utility/Utility.h"
 #include "../stb_image/stb_image_write.h"
-#include <mpi/mpi.h>
 
 namespace rt
 {

@@ -11,7 +11,7 @@ REM ECHO "Building files:" %srcFiles%
 SET outName=raytracing
 SET outDir=bin
 SET cc=clang++
-SET compilerFlags=-Wall
+SET compilerFlags=-Wall -std=c++17
 SET includeFlags=-Isrc
 SET linkerFlags=
 SET defines=

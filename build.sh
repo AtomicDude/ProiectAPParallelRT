@@ -6,7 +6,7 @@ srcFiles=$(find src/ -name *.c??)
 outName="raytracing"
 outDir="bin"
 cc="g++"
-compilerFlags="-Wall"
+compilerFlags="-Wall -std=c++17"
 includeFlags="-Isrc"
 linkerFlags=""
 defines=""

@@ -1,5 +1,7 @@
 #include "Drawable/Sphere/Sphere.h"
 #include "Drawable/Triangle/Triangle.h"
+#include "Drawable/AABB/AABB2D.h"
+#include "Drawable/AABB/AABB3D.h"
 #include "Material/DiffuseMaterial.h"
 #include "Material/MetalMaterial.h"
 #include "Material/DielectricMaterial.h"
@@ -58,24 +60,30 @@ int main(int argc, char **argv)
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(0.0, -100.5, -1.0),
         100.0,
-        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0))));
-    // scene.add(std::make_shared<rt::Sphere>(
-    //     rt::Vec3(-1.0, 0.0, -1.0),
-    //     0.5,
-    //     std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5)));
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0)))
+    );
+    scene.add(std::make_shared<rt::Sphere>(
+        rt::Vec3(-1.0, 0.0, -1.0),
+        0.5,
+        std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5))
+    );
     // scene.add(std::make_shared<rt::Sphere>(
     //     rt::Vec3(0.0, 0.0, -1.0),
     //     0.5,
-    //     std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2))));
-    // scene.add(std::make_shared<rt::Sphere>(
-    //     rt::Vec3(1.0, 0.0, -1.0),
-    //     0.5,
-    //     std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01)));
-    scene.add(std::make_shared<rt::Triangle>(
-        rt::Vec3(-0.5, -1.0, -1.0),
-        rt::Vec3(0.5, -1.0, -1.0),
-        rt::Vec3(0.0, 0.5, -1.0),
-        std::make_shared<rt::DielectricMaterial>(rt::Vec3(0.9, 0.0, 0.0), 1.5)));
+    //     std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2)))
+    // );
+    scene.add(std::make_shared<rt::AABB3D>(
+        rt::Vec3(-0.5, 0.0, -1.0),
+        0.5,
+        0.5,
+        0.5,
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2)))
+    );
+    scene.add(std::make_shared<rt::Sphere>(
+        rt::Vec3(1.0, 0.0, -1.0),
+        0.5,
+        std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01))
+    );
 
     std::chrono::steady_clock clock;
     std::chrono::steady_clock::time_point t0;

@@ -6,7 +6,7 @@ srcFiles=$(find src/ -name *.c??)
 outName="raytracing"
 outDir="bin"
 cc="mpic++"
-compilerFlags="-Wall -fdiagnostics-color=always"
+compilerFlags="-Wall -std=c++17 -fdiagnostics-color=always"
 includeFlags="-Isrc"
 linkerFlags=""
 defines=""

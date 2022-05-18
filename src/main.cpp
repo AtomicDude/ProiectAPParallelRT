@@ -1,8 +1,8 @@
 #include "Drawable/Sphere/Sphere.h"
+#include "Drawable/AABB/AABB3D.h"
 #include "Material/DiffuseMaterial.h"
 #include "Material/MetalMaterial.h"
 #include "Material/DielectricMaterial.h"
-
 #include "Camera/Camera.h"
 #include "Area/Area.h"
 #include "Scene/Scene.h"
@@ -16,17 +16,30 @@ int main(int argc, char** argv)
     const double ratio_w = 16.0;
     const double ratio_h = 9.0;
     const double ratio = ratio_w / ratio_h;
-    const uint32_t height = 100;
+    uint32_t height = 100;
+    bool useBorder = false;
+
+    if (argc == 2)
+    {
+        height = std::stoi(argv[1]);
+    }
+
+    if (argc >= 3)
+    {
+        height = std::stoi(argv[1]);
+        useBorder = true;
+    }
+
     const uint32_t width = static_cast<uint32_t>(ratio * static_cast<double>(height));
     const uint32_t channels = 3;
 
     rt::Camera camera(
-        rt::Vec3(0, 0, 0),                                          // eye
-        rt::Vec3(0.0, 0.0, -1.0),                                   // lookAt
-        rt::Vec3(0.0, 1.0, 0.0),                                    // up
-        90.0,                                                       // fov
-        static_cast<double>(width) / static_cast<double>(height),   // aspect ratio
-        0.0                                                         // aperture
+        rt::Vec3(0, 0, 0),         // eye
+        rt::Vec3(0.0, 0.0, -1.0),  // lookAt
+        rt::Vec3(0.0, 1.0, 0.0),   // up
+        90.0,                      // fov
+        ratio,                     // aspect ratio
+        0.0                        // aperture
     );
     
     rt::Scene scene(width, height);
@@ -34,23 +47,21 @@ int main(int argc, char** argv)
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(0.0, -100.5, -1.0),
         100.0,
-        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0))
-    ));
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.8, 0.0))));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(-1.0, 0.0, -1.0),
         0.5,
-        std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5)
-    ));
-    scene.add(std::make_shared<rt::Sphere>(
-        rt::Vec3(0.0, 0.0, -1.0),
-        0.5,
-        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.8, 0.6, 0.2))
-    ));
+        std::make_shared<rt::DielectricMaterial>(rt::Vec3(1.0, 1.0, 1.0), 1.5)));
+    scene.add(std::make_shared<rt::AABB3D>(
+        rt::Vec3(-0.4, -0.4, -0.8),
+        0.8,
+        0.8,
+        0.8,
+        std::make_shared<rt::DiffuseMaterial>(rt::Vec3(0.9, 0.0, 0.2))));
     scene.add(std::make_shared<rt::Sphere>(
         rt::Vec3(1.0, 0.0, -1.0),
         0.5,
-        std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01)
-    ));
+        std::make_shared<rt::MetalMaterial>(rt::Vec3(0.56, 0.57, 0.58), 0.01)));
 
     std::chrono::steady_clock clock;
     std::chrono::steady_clock::time_point t0;
@@ -100,10 +111,10 @@ int main(int argc, char** argv)
         imageArea,          // imageArea
         64,                 // samples per pixel
         32,                 // max ray depth (bounces)
-        1.5                 // gamma correction
+        1.5,                // gamma correction
+        useBorder
     );
 
-    localImage.write(std::to_string(comm_rank) + ".png");
     std::cout << "Stop " << comm_rank << "\n";
 
     MPI_Gather(
@@ -138,7 +149,8 @@ int main(int argc, char** argv)
                 imageArea,          // imageArea
                 64,                 // samples per pixel
                 32,                 // max ray depth (bounces)
-                1.5                 // gamma correction
+                1.5,                // gamma correction
+                useBorder
             );
         }
 
@@ -147,7 +159,7 @@ int main(int argc, char** argv)
 
         std::cout << "Writing image...\n";
         t0 = clock.now();
-        globalImage.write("spheres.png");
+        globalImage.write("scene.png");
         t1 = clock.now();
 
         std::cout << "Done. (" << std::chrono::duration<double>(t1 - t0).count() << "s)\n";

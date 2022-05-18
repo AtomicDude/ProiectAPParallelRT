@@ -21,7 +21,8 @@ namespace rt
             const Area& imageArea,
             uint32_t samples = 64,
             uint32_t depth = 32,
-            double gamma = 1.0
+            double gamma = 1.0,
+            bool useBorder = false
         );
 
     private:

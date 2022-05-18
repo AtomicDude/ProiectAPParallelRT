@@ -47,12 +47,12 @@ int main(int argc, char **argv)
     uint32_t height_granularity = width_granularity;
 
     rt::Camera camera(
-        rt::Vec3(0.0, 0.7, 0.0),                                  // eye
-        rt::Vec3(0.0, 0.0, -1.0),                                 // lookAt
-        rt::Vec3(0.0, 1.0, 0.0),                                  // up
-        90.0,                                                     // fov
-        static_cast<double>(width) / static_cast<double>(height), // aspect ratio
-        0.0                                                       // aperture
+        rt::Vec3(0.0, 0.7, 0.0),   // eye
+        rt::Vec3(0.0, 0.0, -1.0),  // lookAt
+        rt::Vec3(0.0, 1.0, 0.0),   // up
+        90.0,                      // fov
+        ratio,                     // aspect ratio
+        0.0                        // aperture
     );
 
     rt::Scene scene(width, height);

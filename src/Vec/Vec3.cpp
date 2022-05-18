@@ -3,6 +3,13 @@
 
 namespace rt
 {
+    Vec3::Vec3(double _x, double _y, double _z) :
+        x(_x),
+        y(_y),
+        z(_z)
+    {
+    }
+
     double Vec3::len(const Vec3& v)
     {
         return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);

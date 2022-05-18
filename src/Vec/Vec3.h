@@ -6,12 +6,7 @@ namespace rt
 {
     union Vec3
     {
-        Vec3(double _x = 0.0, double _y = 0.0, double _z = 0.0) :
-            x(_x),
-            y(_y),
-            z(_z)
-        {
-        }
+        Vec3(double _x = 0.0, double _y = 0.0, double _z = 0.0);
 
         struct
         {

@@ -9,7 +9,7 @@ rm -f $png
 outName="raytracing"
 outDir="bin"
 cc="mpic++"
-compilerFlags="-Wall -fdiagnostics-color=always -O3"
+compilerFlags="-Wall -fdiagnostics-color=always -O3 -std=c++17"
 includeFlags="-Isrc"
 linkerFlags=""
 defines=""

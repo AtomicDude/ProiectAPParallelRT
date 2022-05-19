@@ -1,0 +1,398 @@
+{
+    "title" : "RT",
+    "params" : {
+        "height" : 1080,
+        "granularity" : 2,
+        "border" : false,
+        "samples" : 64,
+        "bounces" : 32,
+        "gamma" : 1.5,
+        "camera" : {
+            "position" : { "x" : 0.1, "y" : 3.0, "z" : 5.0 },
+            "lookAt" : { "x" : 0.0, "y" : 2.0, "z" : -1.0 },
+            "up" : { "x" : 0.0, "y" : 1.0, "z" : 0.0 },
+            "fovy" : 90.0,
+            "aperture" : 0.0
+        }
+    },
+    "drawables" : [
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : 0.0, "y" : -100.5, "z" : -1.0 },
+                "radius" : 100.0,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.7, "g" : 0.7, "b" : 0.7 }
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -3.0, "y" : 0.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 1.0, "g" : 0.2, "b" : 0.9 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -3.0, "y" : 1.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.5, "g" : 0.5, "b" : 0.8 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -3.0, "y" : 2.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.0, "g" : 0.1, "b" : 0.1 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -3.0, "y" : 3.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.0, "g" : 0.8, "b" : 0.4 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -3.0, "y" : 4.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "diffuse",
+                    "params" : {
+                        "color" : { "r" : 0.0, "g" : 0.6, "b" : 0.9 }
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -3.0, "y" : 5.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.3, "g" : 0.0, "b" : 0.6 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -2.0, "y" : 5.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.9, "g" : 0.9, "b" : 0.5 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -1.0, "y" : 5.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.6, "g" : 0.9, "b" : 0.6 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -1.0, "y" : 4.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "diffuse",
+                    "params" : {
+                        "color" : { "r" : 0.2, "g" : 0.7, "b" : 0.2 }
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -1.0, "y" : 3.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "diffuse",
+                    "params" : {
+                        "color" : { "r" : 0.4, "g" : 0.8, "b" : 0.6 }
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -2.0, "y" : 3.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.8, "g" : 0.1, "b" : 0.7 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -2.0, "y" : 2.0, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "diffuse",
+                    "params" : {
+                        "color" : { "r" : 0.5, "g" : 0.6, "b" : 1.0 }
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -1.29289321, "y" : 1.29289321, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.8, "g" : 0.4, "b" : 0.9 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : -0.58578643, "y" : 0.58578643, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.6, "g" : 0.2, "b" : 0.4 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "sphere",
+            "params" : {
+                "center" : { "x" : 0.12132035, "y" : -0.12132035, "z" : -1.0 },
+                "radius" : 0.5,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.9, "g" : 1.0, "b" : 0.3 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 3.0, "y" : 0.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "diffuse",
+                    "params" : {
+                        "color" : { "r" : 0.2, "g" : 0.1, "b" : 0.9 }
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 3.0, "y" : 1.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.3, "g" : 0.9, "b" : 0.8 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 3.0, "y" : 2.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.1, "g" : 0.2, "b" : 0.3 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 3.0, "y" : 3.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "diffuse",
+                    "params" : {
+                        "color" : { "r" : 0.2, "g" : 0.9, "b" : 0.0 }
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 3.0, "y" : 4.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.0, "g" : 0.3, "b" : 0.7 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 1.0, "y" : 5.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.1, "g" : 0.2, "b" : 0.3 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 2.0, "y" : 5.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.9, "g" : 0.8, "b" : 0.3 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 3.0, "y" : 5.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.9, "g" : 0.2, "b" : 0.3 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 4.0, "y" : 5.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "metal",
+                    "params" : {
+                        "color" : { "r" : 0.7, "g" : 0.8, "b" : 0.6 },
+                        "fuzziness" : 0.001
+                    }
+                }
+            }
+        },
+        {
+            "type" : "aabb3d",
+            "params" : {
+                "position" : { "x" : 5.0, "y" : 5.0, "z" : -1.5 },
+                "width" : 1.0,
+                "height" : 1.0,
+                "depth" : 1.0,
+                "material" : {
+                    "type" : "dielectric",
+                    "params" : {
+                        "color" : { "r" : 0.4, "g" : 0.6, "b" : 0.5 },
+                        "refraction" : 1.5
+                    }
+                }
+            }
+        }
+    ]
+}

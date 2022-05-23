@@ -69,6 +69,16 @@ namespace rt
                         static_cast<uint8_t>(255.0 * color.b)
                     );
                 }
+                else
+                {
+                    image.setPixel(
+                        imageArea.x + index_x,
+                        imageArea.y + index_y,
+                        static_cast<uint8_t>(255.0),
+                        static_cast<uint8_t>(255.0),
+                        static_cast<uint8_t>(255.0)
+                    );
+                }
             }
         }
     }
